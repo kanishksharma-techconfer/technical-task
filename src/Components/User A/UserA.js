@@ -6,12 +6,12 @@ import {v4} from "uuid";
 
 const item = {
   id: v4(),
-  name: "DOM Block 1"
+  name: "User A DOM Block 1"
 }
 
 const item2 = {
   id: v4(),
-  name: "DOM Block 2"
+  name: "User A DOM Block 2"
 }
 
 function UserA() {
