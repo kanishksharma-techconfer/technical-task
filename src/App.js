@@ -54,11 +54,11 @@ function App() {
      <Route path="/" element={<Login />} />
      <Route
       path="/user-a"
-      element={<UserA state={state} setState={setState} states={states} setStates={setStates} />}
+      element={<UserA states={states} setStates={setStates} />}
      />
      <Route
       path="/user-b"
-      element={<UserB state={state} setState={setState} states={states} setStates={setStates} />}
+      element={<UserB state={state} setState={setState} />}
      />
     </Routes>
    </BrowserRouter>
