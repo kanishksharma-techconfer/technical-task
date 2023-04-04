@@ -1,123 +1,91 @@
-import React, {useState} from 'react';
-import '../../App.css';
-import {DragDropContext, Droppable, Draggable} from "react-beautiful-dnd";
+import React from "react";
+import "../../App.css";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import _ from "lodash";
-import {v4} from "uuid";
+import { useNavigate } from "react-router-dom";
 
-const item = {
-  id: v4(),
-  name: "User A DOM Block 1"
-}
-
-const item2 = {
-  id: v4(),
-  name: "User A DOM Block 2"
-}
-
-function UserA() {
-  const [text, setText] = useState("")
-  const [state, setState] = useState({
-    "Public": {
-      title: "Public",
-      items: [item, item2]
-    },
-    "Private": {
-      title: "Private",
-      items: []
-    }
-  })
-
-  const handleDragEnd = ({destination, source}) => {
+function UserA({ states, setStates }) {
+  const handleDragEnd = ({ destination, source }) => {
     if (!destination) {
-      return
+      return;
     }
-
-    if (destination.index === source.index && destination.droppableId === source.droppableId) {
-      return
+    if (
+      destination.index === source.index &&
+      destination.droppableId === source.droppableId
+    ) {
+      return;
     }
 
     // Creating a copy of item before removing it from state
-    const itemCopy = {...state[source.droppableId].items[source.index]}
+    const itemCopy = { ...states[source.droppableId].items[source.index] };
 
-    setState(prev => {
-      prev = {...prev}
+    setStates((prev) => {
+      prev = { ...prev };
       // Remove from previous items array
-      prev[source.droppableId].items.splice(source.index, 1)
-
+      prev[source.droppableId].items.splice(source.index, 1);
 
       // Adding to new items array location
-      prev[destination.droppableId].items.splice(destination.index, 0, itemCopy)
+      prev[destination.droppableId].items.splice(
+        destination.index,
+        0,
+        itemCopy
+      );
 
-      return prev
-    })
-  }
+      return prev;
+    });
+  };
 
-  const addItem = () => {
-    setState(prev => {
-      return {
-        ...prev,
-        todo: {
-          title: "Todo",
-          items: [
-            {
-              id: v4(),
-              name: text
-            },
-            ...prev.todo.items
-          ]
-        }
-      }
-    })
-
-    setText("")
-  }
-
+  const navigate = useNavigate();
   return (
     <div className="App">
-        <h1>User A</h1>
-      <div>
-        <input type="text" value={text} onChange={(e) => setText(e.target.value)}/>
-        <button onClick={addItem}>Add</button>
-      </div>
+      <h1>User A</h1>
+      <h2 style={{ cursor: 'pointer' }} onClick={() => navigate("/user-b")}>Go to User B</h2>
       <DragDropContext onDragEnd={handleDragEnd}>
-        {_.map(state, (data, key) => {
-          return(
+        {_.map(states, (data, key) => {
+          return (
             <div key={key} className={"column"}>
               <h3>{data.title}</h3>
               <Droppable droppableId={key}>
                 {(provided, snapshot) => {
-                  return(
+                  return (
                     <div
                       ref={provided.innerRef}
                       {...provided.droppableProps}
                       className={"droppable-col"}
                     >
-                      {data.items.map((el, index) => {
-                        return(
-                          <Draggable key={el.id} index={index} draggableId={el.id}>
-                            {(provided, snapshot) => {
-                              console.log(snapshot)
-                              return(
-                                <div
-                                  className={`item ${snapshot.isDragging && "dragging"}`}
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                >
-                                  {el.name}
-                                </div>
-                              )
-                            }}
-                          </Draggable>
-                        )
-                      })}
+                      {data.items &&
+                        data.items.map((el, index) => {
+                          return (
+                            <Draggable
+                              key={el.id}
+                              index={index}
+                              draggableId={el.id}
+                            >
+                              {(provided, snapshot) => {
+                                console.log(snapshot);
+                                return (
+                                  <div
+                                    className={`item ${
+                                      snapshot.isDragging && "dragging"
+                                    }`}
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                  >
+                                    {el.name}
+                                  </div>
+                                );
+                              }}
+                            </Draggable>
+                          );
+                        })}
                       {provided.placeholder}
                     </div>
-                  )
+                  );
                 }}
               </Droppable>
             </div>
-          )
+          );
         })}
       </DragDropContext>
     </div>

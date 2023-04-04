@@ -1,37 +1,15 @@
-import React, { useState } from "react";
+import React from "react";
 import "../../App.css";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import _ from "lodash";
-import { v4 } from "uuid";
+import { useNavigate } from "react-router-dom";
 
-const item = {
-  id: v4(),
-  name: "User B DOM Block 1",
-};
-
-const item2 = {
-  id: v4(),
-  name: "User B DOM Block 2",
-};
-
-function UserB() {
-  const [text, setText] = useState("");
-  const [state, setState] = useState({
-    Public: {
-      title: "Public",
-      items: [item, item2],
-    },
-    Private: {
-      title: "Private",
-      items: [],
-    },
-  });
-
+function UserB({ state, setState }) {
+  console.log(state);
   const handleDragEnd = ({ destination, source }) => {
     if (!destination) {
       return;
     }
-
     if (
       destination.index === source.index &&
       destination.droppableId === source.droppableId
@@ -53,43 +31,16 @@ function UserB() {
         0,
         itemCopy
       );
-
+      console.log(state);
       return prev;
     });
   };
-
-  const addItem = () => {
-    setState((prev) => {
-      return {
-        ...prev,
-        todo: {
-          title: "Todo",
-          items: [
-            {
-              id: v4(),
-              name: text,
-            },
-            ...prev.todo.items,
-          ],
-        },
-      };
-    });
-
-    setText("");
-  };
-
+  
+  const navigate = useNavigate();
   return (
     <div className="App">
       <h1>User B</h1>
-      <div>
-        <input
-          type="text"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-        />
-        <button onClick={addItem}>Add</button>
-      </div>
-
+      <h2 style={{ cursor: 'pointer' }} onClick={()=> navigate('/user-a')}>Go to User A</h2>
       <DragDropContext onDragEnd={handleDragEnd}>
         {_.map(state, (data, key) => {
           return (
@@ -103,31 +54,31 @@ function UserB() {
                       {...provided.droppableProps}
                       className={"droppable-col"}
                     >
-                      {data.items.map((el, index) => {
-                        return (
-                          <Draggable
-                            key={el.id}
-                            index={index}
-                            draggableId={el.id}
-                          >
-                            {(provided, snapshot) => {
-                              console.log(snapshot);
-                              return (
-                                <div
-                                  className={`item ${
-                                    snapshot.isDragging && "dragging"
-                                  }`}
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                >
-                                  {el.name}
-                                </div>
-                              );
-                            }}
-                          </Draggable>
-                        );
-                      })}
+                      {data.items &&
+                        data.items.map((el, index) => {
+                          return (
+                            <Draggable
+                              key={el.id}
+                              index={index}
+                              draggableId={el.id}
+                            >
+                              {(provided, snapshot) => {
+                                return (
+                                  <div
+                                    className={`item ${
+                                      snapshot.isDragging && "dragging"
+                                    }`}
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                  >
+                                    {el.name}
+                                  </div>
+                                );
+                              }}
+                            </Draggable>
+                          );
+                        })}
                       {provided.placeholder}
                     </div>
                   );
